@@ -64,10 +64,22 @@ app.get('/', function (req, res) {
   visitor.pageview("/").send();
   res.sendfile(__dirname + '/views/index.html');
 });
+
 app.get('/sigfoxdown', function(req, res){
   console.log("===> GET /sigfoxdown");
     visitor.pageview("/sigfoxdown");
-    debug('Sigfox Downlink');
+    console.log('===> Sigfox Downlink');
+    res.format({
+        json: function(){
+                res.json({"C6F93" : { "downlinkData" : "babecafedeadbeef"}})
+              }
+    });
+});
+
+app.post('/sigfoxdown', requestLogger, function(req, res){
+  console.log("===> POST /sigfoxdown");
+    visitor.pageview("/sigfoxdown");
+    console.log('===> Sigfox Downlink');
     res.format({
         json: function(){
                 res.json({"C6F93" : { "downlinkData" : "babecafedeadbeef"}})
@@ -80,7 +92,8 @@ app.get('/iotlogs', function(req, res){
   visitor.pageview("/iotlogs").send();
   console.log('Looking for logs');
 
-  db.find('iotdata', {path:'/update', payload:{$exists:true}}, {sort:{time:-1}})
+//  db.find('iotdata', {path:'/update', payload:{$exists:true}}, {sort:{time:-1}})
+  db.find('iotdata', {payload:{$exists:true}}, {sort:{time:-1}})
   .then(function(data){
     console.log('%s items found', data.length);
     res.format({

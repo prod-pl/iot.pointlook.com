@@ -15,6 +15,7 @@ module.exports = function(req, res, next){
     Object.keys(req.query).forEach(function(key){
       if (!entry.payload[key]){
         entry.payload[key] = req.query[key];
+        console.log('=:==> queryString ', entry.payload[key])
       }
       else{
         console.log('=:==> WARN GET/POST conflict on %s', key);
@@ -26,12 +27,12 @@ module.exports = function(req, res, next){
 
   db.insert('iotdata', entry)
   .then(function(obj){
-    console.log('=:==> Request log OK');
-    console.log(obj);
+    console.log('=:==> db.insert OK');
+//    console.log(obj);
     next();
   })
   .catch(function(err){
-    console.log('=:==> Log err : %s', err);
+    console.log('=:==> db.insert err : %s', err);
     //return res.status(500).json({err:'Unable to log request', details:err.message});
     next();
   });
