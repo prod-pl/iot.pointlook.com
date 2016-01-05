@@ -114,9 +114,12 @@ app.get('/iotlogs', function(req, res){
   }
 
   console.log("===> path: ", entry.payload['deviceId']);
+//  dbQuery = { path: '/update', payload:{$exists:true}}, {sort:{time:-1}};
+// if (entry.payload['deviceId'] || entry.payload['deviceId'] !== "Device ID") dbQuery = "{path: entry.payload['deviceId'], payload:{$exists:true}}, {sort:{time:-1}}";
+//  db.find('iotdata', dbQuery)
+  var deviceID = '/' + entry.payload['deviceId'];
 
-//  db.find('iotdata', {path: entry.payload['deviceId'], payload:{$exists:true}}, {sort:{time:-1}})
-  db.find('iotdata', {path:'/update', payload:{$exists:true}}, {sort:{time:-1}})
+  db.find('iotdata', {path: deviceID, payload:{$exists:true}}, {sort:{time:-1}})
   .then(function(data){
     console.log('%s items found', data.length);
     res.format({
