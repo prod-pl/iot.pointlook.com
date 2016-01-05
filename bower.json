@@ -1,0 +1,27 @@
+{
+  "name": "findme.pointlook.com",
+  "description": "Your first SIGFOX callback handler :) . Logs the POST request into a mongo collection, and show a table of received messages",
+  "main": "server.js",
+  "authors": [
+    "Nicolas Lesconnec"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "sigfox"
+  ],
+  "homepage": "https://github.com/prod-pl/findme.pointlook.com",
+  "moduleType": [
+    "amd"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "BigVideo": "BigVideo.js#~1.1.5"
+  }
+}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FindMe</title>
+  <meta name="description" content="FindMe when I tell you">
+  <meta name="author" description="PointLook">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oxygen:400,300,700">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="content">
+  <h1 class="content__heading">Find Me</h1>
+  <p class="content__teaser">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Suscipit qui voluptatum enim est deserunt assumenda, aspernatur quam aperiam!</p>
+  <a href="/sigfox" class="content__cta">sigfox</a>
+</div><!-- /content -->
+
+<video id="my-video" class="video" muted loop poster="/media/demo.png">
+    <source src="https://s3.amazonaws.com/assets.pointlook.com/public/videos/waterdrop/demo-dash.mp4">
+</video><!-- /video -->
+
+<script>
+(function() {
+  /**
+   * Video element
+   * @type {HTMLElement}
+   */
+  var video = document.getElementById("my-video");
+
+  /**
+   * Check if video can play, and play it
+   */
+  video.addEventListener( "canplay", function() {
+    video.play();
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+DATE=$(date)
+PWD=$(pwd)
+
+echo $DATE
+ps -ef | grep -v grep | grep $PWD | awk '{ print $2 }' | xargs kill -9
+echo "Stopping all processes owned by $PWD ..."
