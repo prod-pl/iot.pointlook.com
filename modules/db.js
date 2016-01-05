@@ -1,30 +1,60 @@
 'use strict';
+/**
+* Load local config to env
+*/
+try{
+  const localConfig = require('./../config.local.js');
+  for (let entry in localConfig){
+    if (process.env[entry]){
+      console.log('%s found in process.env too, ignore the local config val\n\t env vars always have precedence', entry);
+    }
+    else{
+      process.env[entry] = localConfig[entry];
+    }
+  }
+}
+catch(e){
+ console.log('No local config found');
+  console.log(e);
+}
+
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
+define(function(require) {
+    var dep = require('dependency');
+
+    //The value returned from the function is
+    //used as the module export visible to Node.
+    return function () {};
+});
 
 const debug = require('debug')('sigfox-callback:db');
 const mongo = require('mongojs');
 const format = require('util').format;
-const dbUrl = process.env.DATABASE_URL || 'mongodb://10.101.101.3:27017/findme';
+const dbUrl = process.env.DATABSE_URL || 'mongodb://rw:rw-2016@ds037395.mongolab.com:37395/iot';
 
 module.exports = {
   db : undefined,
   connect : function() {
-    this.db = mongo(dbUrl, ['calls']);
+    this.db = mongo(dbUrl, ['iotdata']);
 
     this.db.on('error', function(err){
-      debug('DB Error - %s', err);
+      console.log('DB Error - %s', err);
     });
     this.db.on('ready', function(){
-      debug('DB ready');
+      console.log('DB ready');
     });
 
     return;
   },
   insert: function(collectionName, data){
-    debug('Insert %o in %s', data, collectionName);
+    console.log('==:=> Insert %o in %s', data, collectionName);
     return new Promise(function(resolve, reject){
       this.db[collectionName].insert(data, function(err, docs){
         if (err){
-          debug('Insert err — %s', err);
+          console.log('==:=> Insert err — %s', err);
           return reject(err);
         }
         return resolve(docs);
@@ -56,7 +86,7 @@ module.exports = {
       .limit(limit)
       .toArray(function(err, docs){
         if (err){
-          debug('Find err — %s', err);
+          console.log('==:=> Find err — %s', err);
           return reject(err);
         }
         return resolve(docs);

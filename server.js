@@ -49,20 +49,23 @@ const visitor = ua('UA-69608609-4', {https: true});
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
-app.set('view engine', 'html');
+app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({extended:false}));
 app.locals.moment = require('moment');
 
 
 db.connect();
+console.log("====> DB connected");
 server.listen(port);
 
 app.get('/', function (req, res) {
+  console.log("===> GET /");
   visitor.pageview("/").send();
   res.sendfile(__dirname + '/views/index.html');
 });
 app.get('/sigfoxdown', function(req, res){
+  console.log("===> GET /sigfoxdown");
     visitor.pageview("/sigfoxdown");
     debug('Sigfox Downlink');
     res.format({
@@ -72,21 +75,26 @@ app.get('/sigfoxdown', function(req, res){
     });
 });
 
-app.get('/sigfox', function(req, res){
-  visitor.pageview("/sigfox").send();
-  debug('Looking for logs');
-  db.find('calls', {path:'/sigfox', payload:{$exists:true}}, {sort:{time:-1}})
+app.get('/iotlogs', function(req, res){
+  console.log("===> GET /iotlogs");
+  visitor.pageview("/iotlogs").send();
+  console.log('Looking for logs');
+
+  db.find('iotdata', {path:'/update', payload:{$exists:true}}, {sort:{time:-1}})
   .then(function(data){
-    debug('%s items found', data.length);
+    console.log('%s items found', data.length);
     res.format({
         /* JSON first */
         json: function(){
+  console.log("===> IOTLOGS json");
             res.json({entries:data});
         },
         html: function(){
-            res.render('sigfox-logs.ejs', {title:'SIGFOX messages', entries:data});
+  console.log("===> IOTLOGS html");
+            res.render('iotlogs', {title:'IoT messages', entries:data});
         },
         default:function(){
+  console.log("===> IOTLOGS default");
             res.status(406).send({err:'Invalid Accept header. This method only handles html & json'});
         }
     });
@@ -94,12 +102,15 @@ app.get('/sigfox', function(req, res){
   .catch(function(err){
     res.format({
       json: function(){
+  console.log("===> ERROR json");
           return res.json({err:'An error occured while fetching messages', details:err});
       },
       html: function(){
-            return res.status(500).render('error', {title:'An error occured while fetching messages', err:err});
+  console.log("===> ERROR html");
+            return res.status(500).render('error.ejs', {title:'An error occured while fetching messages', err:err});
         },
       default: function(){
+  console.log("===> ERROR default");
         res.status(406).send({err:'Invalid Accept header. This method only handles html & json'});
       }
     });
@@ -107,7 +118,8 @@ app.get('/sigfox', function(req, res){
 });
 
 
-app.post('/sigfox', requestLogger, function(req, res){
+app.post('/update', requestLogger, function(req, res){
+  console.log("===> POST /update");
   debug('~~ POST request ~~');
   res.json({result:'♡'});
 });
