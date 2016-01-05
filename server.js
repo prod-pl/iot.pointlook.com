@@ -92,8 +92,31 @@ app.get('/iotlogs', function(req, res){
   visitor.pageview("/iotlogs").send();
   console.log('Looking for logs');
 
-//  db.find('iotdata', {path:'/update', payload:{$exists:true}}, {sort:{time:-1}})
-  db.find('iotdata', {payload:{$exists:true}}, {sort:{time:-1}})
+  let entry = {
+    method: req.method,
+    path: req.url.replace(/\?(.*)$/, ''),
+    time: new Date().getTime(),
+    payload:req.body||{}
+  };
+
+  //querystring ?
+  if (req.query && Object.keys(req.query).length){
+    Object.keys(req.query).forEach(function(key){
+      if (!entry.payload[key]){
+        entry.payload[key] = req.query[key];
+        console.log('===> GET /iotlogs queryString ', entry.payload[key])
+      }
+      else{
+        console.log('===> WARN GET/POST conflict on %s', key);
+        entry.payload['qry-'+key] = req.query[key];
+      }
+    });
+  }
+
+  console.log("===> path: ", entry.payload['deviceId']);
+
+//  db.find('iotdata', {path: entry.payload['deviceId'], payload:{$exists:true}}, {sort:{time:-1}})
+  db.find('iotdata', {path:'/update', payload:{$exists:true}}, {sort:{time:-1}})
   .then(function(data){
     console.log('%s items found', data.length);
     res.format({
@@ -129,7 +152,6 @@ app.get('/iotlogs', function(req, res){
     });
   });
 });
-
 
 app.post('/update', requestLogger, function(req, res){
   console.log("===> POST /update");
